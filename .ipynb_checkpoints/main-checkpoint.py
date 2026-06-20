@@ -123,15 +123,16 @@
 
 # if __name__ == '__main__':
 #     app.run(debug=True)
+
 import dash
 from dash import dcc, html, Input, Output, State
 import dash_bootstrap_components as dbc
-
+ 
 # Initialize the app
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], suppress_callback_exceptions=True)
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 app.title = "EXAI Dashboard"
 server = app.server
-
+ 
 # Layout for the front page
 front_page_layout = dbc.Container([
     html.H1(" "),
@@ -161,7 +162,7 @@ front_page_layout = dbc.Container([
                 multiple=False
             ),
         ], width=6),
-
+ 
         dbc.Col([
             html.H5("Upload Sample Dataset"),
             dcc.Upload(
@@ -176,7 +177,7 @@ front_page_layout = dbc.Container([
             ),
         ], width=6),
     ], className="mb-4"),
-
+ 
     dbc.Row([
         dbc.Col(dbc.Button("Global Explanation", id="btn-page1", color="primary", className="me-2")),
         dbc.Col(dbc.Button("Local Explanation", id="btn-page2", color="secondary")),
@@ -185,34 +186,24 @@ front_page_layout = dbc.Container([
     # There must only be ONE component with id='url' in the whole app,
     # and it already lives in app.layout below.
 ])
-
+ 
 # Layouts for other pages
 page1_layout = dbc.Container([
-    html.H2("Global Explanation"),
-    html.P("This is the global explanation page."),
-
-    dbc.Row([
-        dbc.Col(dbc.Button("Main Page", id="btn-page1-home", color="secondary", className="me-2")),
-        dbc.Col(dbc.Button("Local Explanation", id="btn-page1-local", color="primary")),
-    ], className="text-center mt-4"),
+    html.H2("Page 1"),
+    html.P("This is the first page.")
 ])
-
+ 
 page2_layout = dbc.Container([
-    html.H2("Local Explanation"),
-    html.P("This is the local explanation page."),
-
-    dbc.Row([
-        dbc.Col(dbc.Button("Main Page", id="btn-page2-home", color="secondary", className="me-2")),
-        dbc.Col(dbc.Button("Global Explanation", id="btn-page2-global", color="primary")),
-    ], className="text-center mt-4"),
+    html.H2("Page 2"),
+    html.P("This is the second page.")
 ])
-
+ 
 # App layout with dynamic content
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
     html.Div(id='page-content')
 ])
-
+ 
 # NOTE: removed the callback for 'tabs-content-horizontal' / 'tabs-horizontal'
 # because those component IDs did not exist anywhere in the layout.
 # If you want tabs, add a dcc.Tabs(id='tabs-horizontal', ...) and a matching
@@ -230,7 +221,7 @@ app.layout = html.Div([
 #         return html.Div([html.H3("Performance Content")])
 #     elif tab == 'tab-3':
 #         return html.Div([html.H3("Risk Analysis Content")])
-
+ 
 # Callbacks for navigation
 @app.callback(
     Output('url', 'pathname'),
@@ -248,44 +239,7 @@ def navigate(btn1, btn2):
     elif button_id == 'btn-page2':
         return '/page2'
     return '/'
-
-# Navigation callback for the buttons on the Global Explanation (page1) screen
-@app.callback(
-    Output('url', 'pathname', allow_duplicate=True),
-    [Input('btn-page1-home', 'n_clicks'),
-     Input('btn-page1-local', 'n_clicks')],
-    prevent_initial_call=True
-)
-def navigate_from_page1(btn_home, btn_local):
-    ctx = dash.callback_context
-    if not ctx.triggered:
-        return '/'
-    button_id = ctx.triggered[0]['prop_id'].split('.')[0]
-    if button_id == 'btn-page1-home':
-        return '/'
-    elif button_id == 'btn-page1-local':
-        return '/page2'
-    return '/'
-
-# Navigation callback for the buttons on the Local Explanation (page2) screen
-@app.callback(
-    Output('url', 'pathname', allow_duplicate=True),
-    [Input('btn-page2-home', 'n_clicks'),
-     Input('btn-page2-global', 'n_clicks')],
-    prevent_initial_call=True
-)
-def navigate_from_page1(btn_home, btn_local):
-    ctx = dash.callback_context
-    if not ctx.triggered:
-        return '/'
-    button_id = ctx.triggered[0]['prop_id'].split('.')[0]
-    if button_id == 'btn-page2-home':
-        return '/'
-    elif button_id == 'btn-page2-global':
-        return '/page1'
-    return '/'
-
-
+ 
 @app.callback(
     Output('page-content', 'children'),
     Input('url', 'pathname')
@@ -297,6 +251,6 @@ def display_page(pathname):
         return page2_layout
     else:
         return front_page_layout
-
+ 
 if __name__ == '__main__':
     app.run(debug=True)
